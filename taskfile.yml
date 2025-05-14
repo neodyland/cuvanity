@@ -1,0 +1,33 @@
+version: '3'
+
+tasks:
+  cuvanity-gen-build-raw:
+    cmds:
+      - uv venv
+      - uv pip install pynacl -U
+  cuvanity-build-raw:
+    cmds:
+      - cmake -B build
+      - cmake --build build -j $(nproc)
+    dir: ./3rd-party/repo
+  cuvanity-raw:
+    cmds:
+      - ./3rd-party/repo/build/vanity_torv3_cuda {{.CLI_ARGS}} | tee -a keys.txt
+  cuvanity:
+    cmds:
+      - docker run --rm -it --gpus=all ghcr.io/neodyland/cuvanity {{.CLI_ARGS}} | tee -a keys.txt
+  cuvanity-gen-raw:
+    cmds:
+      - uv run 3rd-party/repo/util/genpubs.py keys.txt
+  cuvanity-gen:
+    cmds:
+      - docker run --rm -it --gpus=all -v ./keys.txt:/work/keys.txt -v ./build:/work/build ghcr.io/neodyland/cuvanity-gen keys.txt
+  routor:
+    cmds:
+      - docker run --rm -it -e ADDR=${ADDR} -v ./build/$(ls -1 ./build | head -n 1)/:/work/hidden_service ghcr.io/neodyland/routor
+    env:
+      ADDR: example.com:80
+  clean:
+    cmds:
+      - rm -rf build
+      - rm keys.txt

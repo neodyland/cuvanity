@@ -1,0 +1,5 @@
+## Thanks
+`./3rd-party/repo` comes from https://github.com/Danukeru/torv3_vanity_addr_cuda which is `BSD 2-Clause "Simplified" License`.
+
+## How to use
+WIP
