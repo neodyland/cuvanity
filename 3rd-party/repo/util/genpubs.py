@@ -2,12 +2,13 @@
 
 import base64
 import hashlib
-import os,sys
+import os, sys
 import pwd
 import grp
 from pathlib import Path
 
-import time    
+import time
+
 epoch_time = int(time.time())
 
 import binascii
@@ -23,6 +24,7 @@ H = binascii.unhexlify(
     "8b655970153799af2aeadc9ff1add0ea6c7251d54154cfa92c173a0dd39c1f94"
 )
 
+
 def scalarmult_H(v):
     return scalarmult(v, H)
 
@@ -36,6 +38,7 @@ def public_from_secret_hex(hk):
         return binascii.hexlify(scalarmult_B(binascii.unhexlify(hk))).decode()
     except nacl.exceptions.RuntimeError:
         raise ValueError("Invalid secret key")
+
 
 def expand_private_key(secret_key) -> bytes:
     hashi = hashlib.sha256(os.urandom(1024)).digest()
@@ -99,10 +102,12 @@ def store_string_to_file(
         os.chown(filename, uid, gid)
     return filename
 
+
 def derive_pub(
-        priv_key: str,
+    priv_key: str,
 ) -> bytes:
     return bytes.fromhex(public_from_secret_hex(priv_key))
+
 
 def create_hidden_service_files(
     private_key: str,
@@ -111,35 +116,45 @@ def create_hidden_service_files(
 
     public_key = derive_pub(private_key)
     private_key = bytes.fromhex(private_key)
-    
+
     uid = os.getuid()
     gid = os.getgid()
-    
+
     file_content_secret = create_hs_ed25519_secret_key_content(private_key)
-    
+
     onion_address = onion_address_from_public_key(public_key)
     print(onion_address)
-    os.mkdir(f"{hidden_service_dir}/{onion_address}") 
+    os.mkdir(f"{hidden_service_dir}/{onion_address}")
     store_bytes_to_file(
-        file_content_secret, f"{hidden_service_dir}/{onion_address}/hs_ed25519_secret_key", uid, gid
+        file_content_secret,
+        f"{hidden_service_dir}/{onion_address}/hs_ed25519_secret_key",
+        uid,
+        gid,
     )
 
     file_content_public = create_hs_ed25519_public_key_content(public_key)
     store_bytes_to_file(
-        file_content_public, f"{hidden_service_dir}/{onion_address}/hs_ed25519_public_key", uid, gid
+        file_content_public,
+        f"{hidden_service_dir}/{onion_address}/hs_ed25519_public_key",
+        uid,
+        gid,
     )
 
-    store_string_to_file(onion_address, f"{hidden_service_dir}/{onion_address}/hostname", uid, gid)
+    store_string_to_file(
+        onion_address, f"{hidden_service_dir}/{onion_address}/hostname", uid, gid
+    )
 
 
 if __name__ == "__main__":
     try:
         keyfile = sys.argv[1]
     except:
-        print("\n Please provide keyfile filepath.\n Examples: /home/user/keys.txt\n           666.keys\n")
+        print(
+            "\n Please provide keyfile filepath.\n Examples: /home/user/keys.txt\n           666.keys\n"
+        )
         sys.exit(1)
-        
-    path = os.getcwd()+ f"/build"
+
+    path = os.getcwd() + f"/build"
     try:
         os.mkdir(path)
     except:
@@ -149,7 +164,7 @@ if __name__ == "__main__":
         for line in f:
             try:
                 create_hidden_service_files(
-                    line.rstrip('\n'),
+                    line.rstrip("\n"),
                     path,
                 )
             except:
