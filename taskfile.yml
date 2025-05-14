@@ -9,7 +9,7 @@ tasks:
       - docker run --rm -it -v ./keys.txt:/work/keys.txt -v ./build:/work/build ghcr.io/neodyland/cuvanity-gen keys.txt
   routor:
     cmds:
-      - docker run --rm -it -e ADDR={{.CLI_ARGS}} -v ./build/$(ls -1 ./build | head -n 1)/:/work/hidden_service ghcr.io/neodyland/routor
+      - docker run --rm -it --network host -e ADDR={{.CLI_ARGS}} -v ./build/$(ls -1 ./build | head -n 1)/:/work/hidden_service ghcr.io/neodyland/routor
   clean:
     cmds:
       - rm -rf build
