@@ -3,3 +3,7 @@
 
 ## How to use
 We have lots of docker images. Have fun!
+
+## License
+- `./3rd-party/repo` is `BSD 2-Clause "Simplified" License`.
+- Others are `MIT License`.
