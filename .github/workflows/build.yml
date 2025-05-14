@@ -17,11 +17,11 @@ jobs:
             tag: ghcr.io/neodyland/cuvanity:latest
             context: .
             runs-on: ubuntu-latest
-          - file: ./Dockerfile
+          - file: ./routor/Dockerfile
             tag: ghcr.io/neodyland/routor:latest-arm64
             context: ./routor
             runs-on: ubuntu-latest
-          - file: ./Dockerfile
+          - file: ./routor/Dockerfile
             tag: ghcr.io/neodyland/routor:latest-amd64
             context: ./routor
             runs-on: ubuntu-24.04-arm
